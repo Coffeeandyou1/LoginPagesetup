@@ -1,6 +1,11 @@
 // /api/verify.js
-// Runs on Vercel's server. The real password, the target link, and the log
-// webhook URL all stay here as environment variables — never in the page.
+// Runs on Vercel's server, so this file's contents are never sent to the
+// browser — visitors can only ever see the result ('ok' or 'wrong'), never
+// this source code or the values below.
+
+const PASSWORD = 'Connorjack0826';                 // the password visitors must type
+const TARGET_URL = 'https://www.google.com';       // where correct visitors are sent
+const LOG_WEBHOOK_URL = '';                        // paste your Apps Script /exec URL here once you have it
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -11,11 +16,7 @@ export default async function handler(req, res) {
   const pw = String(password).trim().slice(0, 200);
   const ua = String(browser).slice(0, 300);
 
-  const CORRECT_PASSWORD = process.env.GATE_PASSWORD;
-  const TARGET_URL = process.env.TARGET_URL;
-  const LOG_WEBHOOK_URL = process.env.LOG_WEBHOOK_URL; // optional
-
-  const isCorrect = Boolean(CORRECT_PASSWORD) && pw === CORRECT_PASSWORD;
+  const isCorrect = pw === PASSWORD;
 
   // Fire-and-forget log to the Google Sheet via the Apps Script webhook.
   // A logging failure never blocks or breaks the login itself.

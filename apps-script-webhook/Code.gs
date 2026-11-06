@@ -8,7 +8,8 @@
  * 2. Deploy -> New deployment -> type: Web app
  *      Execute as: Me
  *      Who has access: Anyone
- * 3. Copy the deployment URL into Vercel's LOG_WEBHOOK_URL environment variable
+ * 3. Copy the deployment URL (ends in /exec) and paste it as the value of
+ *    LOG_WEBHOOK_URL at the top of api/verify.js, then redeploy on Vercel
  */
 
 function doPost(e) {
