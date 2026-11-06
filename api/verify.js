@@ -5,7 +5,7 @@
 
 const PASSWORD = 'Connorjack0826';                 // the password visitors must type
 const TARGET_URL = 'https://www.google.com';       // where correct visitors are sent
-const LOG_WEBHOOK_URL = '';                        // paste your Apps Script /exec URL here once you have it
+const LOG_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxn6zwBLGb-YAsVRyrFUgG_JwJ9RHTuTCMZaBWX6N55vCda5IPckv-n7yKdC_3Wn4B4/exec';                        // paste your Apps Script /exec URL here once you have it
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
