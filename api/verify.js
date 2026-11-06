@@ -18,22 +18,30 @@ export default async function handler(req, res) {
 
   const isCorrect = pw === PASSWORD;
 
-  // Fire-and-forget log to the Google Sheet via the Apps Script webhook.
-  // A logging failure never blocks or breaks the login itself.
+  // Log to the Google Sheet via the Apps Script webhook.
+  // Must be AWAITED: Vercel freezes the function as soon as the response is
+  // sent, so a fire-and-forget fetch usually never reaches Google.
+  // The 5s timeout + catch mean a logging failure never breaks the login.
   if (LOG_WEBHOOK_URL) {
-    fetch(LOG_WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        result: isCorrect ? 'CORRECT' : 'WRONG',
-        text: pw,
-        vid: String(vid).slice(0, 40),
-        browser: ua
-      })
-    })
-      .then(r => r.text())
-      .then(text => console.log('Webhook response:', text))
-      .catch(err => console.error('Webhook failed:', err));
+    try {
+      const r = await fetch(LOG_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          result: isCorrect ? 'CORRECT' : 'WRONG',
+          text: pw,
+          vid: String(vid).slice(0, 40),
+          browser: ua
+        }),
+        redirect: 'follow',
+        signal: AbortSignal.timeout(5000)
+      });
+      console.log('Webhook response:', r.status, await r.text());
+    } catch (err) {
+      console.error('Webhook failed:', err);
+    }
+  } else {
+    console.warn('LOG_WEBHOOK_URL is empty — nothing will be logged.');
   }
 
   if (isCorrect) {
